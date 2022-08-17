@@ -10,22 +10,30 @@ import SwiftUI
 struct HomeView: View {
     //MARK: - PROPRETIES
     @AppStorage("onboarding") var isOnboardingViewActive: Bool = false
+    @State private var isAnimating: Bool = false
+    
     //MARK: - BODY
     var body: some View {
         VStack(spacing: 20) {
-        //MARK: - HEADER
+            //MARK: - HEADER
             
             Spacer()
-            
             ZStack {
                 CircleGroupView(ShapeColor: .gray, ShapeOpacity: 0.2)
                 Image("character-2")
                     .resizable()
                     .scaledToFit()
-                .padding()
+                    .padding()
+                    .offset(y: isAnimating ? 35 : -35)
+                    .animation(
+                        Animation
+                            .easeInOut(duration: 4)
+                            .repeatForever(),
+                        value: isAnimating
+                    )
             }//:ZSTACK
             
-        //MARK: - CENTER
+            //MARK: - CENTER
             Text("The time leads to mastery is dependent on the intensity of our focus.")
                 .font(.title3)
                 .fontWeight(.light)
@@ -33,11 +41,13 @@ struct HomeView: View {
                 .multilineTextAlignment(.center)
                 .padding()
             
-        //MARK: - FOOTER
+            //MARK: - FOOTER
             Spacer()
             
             Button(action: {
-                isOnboardingViewActive = true
+                withAnimation {
+                    isOnboardingViewActive = true
+                }
             }) {
                 Image(systemName: "arrow.triangle.2.circlepath.circle.fill")
                     .imageScale(.large)
@@ -45,17 +55,18 @@ struct HomeView: View {
                 Text("Restart")
                     .font(.system(.title3, design: .rounded))
                     .fontWeight(.bold)
-         
             }//:BUTTON
             .buttonStyle(.borderedProminent)
             .buttonBorderShape(.capsule)
             .controlSize(.large)
-            
-            
         }//:VSTACK
+        .onAppear(perform: {
+            DispatchQueue.main.asyncAfter(deadline: .now(), execute: {
+                isAnimating = true
+            })
+        })
     }
 }
-
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         HomeView()
