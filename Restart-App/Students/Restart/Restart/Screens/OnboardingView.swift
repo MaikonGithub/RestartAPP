@@ -12,20 +12,18 @@ struct OnboardingView: View {
     @AppStorage("onboarding") var isOnboardingViewActive: Bool = true
     @State private var buttonWidth: Double = UIScreen.main.bounds.width - 80
     @State private var buttonOffset: CGFloat = 0
-    
+    @State private var isAnimating: Bool = false
     
     //MARK: - BODY
     var body: some View {
         ZStack {
-            
             Color("ColorBlue")
                 .ignoresSafeArea(.all, edges: .all)
-            
             VStack(spacing: 20) {
                 //MARK: - HEADER
-                
                 Spacer()
                 VStack(spacing: 0){
+                    
                     Text("Share.")
                         .font(.system(size: 60))
                         .fontWeight(.heavy)
@@ -40,29 +38,30 @@ struct OnboardingView: View {
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 10)
-                    
-                    
-                    
-                    
                 }//HEADER END
+                .opacity( isAnimating ? 1 : 0)
+                .offset(y: isAnimating ? 0 : -40)
+                .animation(.easeOut(duration: 1), value: isAnimating)
                 
                 //MARK: - CENTER
-                
                 ZStack {
                     CircleGroupView(ShapeColor: .white, ShapeOpacity: 0.2)
+                    
                     Image("character-1")
                         .resizable()
                         .scaledToFit()
+                        .opacity(isAnimating ? 1 : 0)
+                        .animation(.easeOut(duration: 1), value: isAnimating)
                 }//CENTER END
                 Spacer()
                 
                 //MARK: - FOOTER
-                
                 ZStack {
                     //Parts of the custom button
                     //1 - Background(static).
                     Capsule()
                         .fill(Color.white.opacity(0.2))
+                    
                     Capsule()
                         .fill(Color.white.opacity(0.2))
                         .padding(8)
@@ -104,12 +103,13 @@ struct OnboardingView: View {
                                     }
                                 }
                                 .onEnded{ _ in
-                                    
-                                    if buttonOffset > buttonWidth / 2 {
-                                        buttonOffset = buttonWidth - 80
-                                        isOnboardingViewActive = false
-                                    } else {
-                                        buttonOffset = 0
+                                    withAnimation(Animation.easeOut(duration: 0.4)) {
+                                        if buttonOffset > buttonWidth / 2 {
+                                            buttonOffset = buttonWidth - 80
+                                            isOnboardingViewActive = false
+                                        } else {
+                                            buttonOffset = 0
+                                        }
                                     }
                                 }
                         )//Gesture
@@ -118,9 +118,14 @@ struct OnboardingView: View {
                 }//FOOTER END
                 .frame(width: buttonWidth, height: 80, alignment: .center)
                 .padding()
-                
+                .opacity(isAnimating ? 1 : 0)
+                .offset(y:isAnimating ? 0 : 40)
+                .animation(.easeOut(duration: 1), value: isAnimating)
             }//:VSTACK
         }//:ZSTACK
+        .onAppear(perform: {
+            isAnimating = true
+        })
     }
 }
 
