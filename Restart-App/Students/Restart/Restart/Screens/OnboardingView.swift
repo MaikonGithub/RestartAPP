@@ -87,9 +87,11 @@ struct OnboardingView: View {
                     Image(systemName: "arrow.left.and.right.circle")
                         .font(.system(size: 44, weight: .ultraLight))
                         .foregroundColor(.white)
+                        .offset(y: 20)
                         .opacity(isAnimating ? 1 : 0)
                         .animation(.easeOut(duration: 1).delay(2), value: isAnimating)
-                        .offset(x: 20), alignment: .bottom
+                        .opacity(indicatorOpacity)
+                        , alignment: .bottom
                 )
                 Spacer()
                 
